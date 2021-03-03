@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <img src="https://raw.githubusercontent.com/StylexTV/Milotic/main/images/banner.png">
+  <img src="https://raw.githubusercontent.com/StylexTV/Milotic/main/images/cover.png">
   <br>
 </h1>
 
