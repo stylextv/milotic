@@ -1,6 +1,6 @@
 <h1 align="center">
   <br>
-  <img src="https://raw.githubusercontent.com/StylexTV/Schach/main/screenshots/0.png">
+  <img src="https://raw.githubusercontent.com/StylexTV/Milotic/main/images/banner.png">
   <br>
 </h1>
 
@@ -10,8 +10,8 @@
   <a href="https://GitHub.com/StylexTV/Milotic/stargazers/">
     <img alt="stars" src="https://img.shields.io/github/stars/StylexTV/Milotic.svg?color=ffdd00"/>
   </a>
-  <a href="https://www.codacy.com/gh/StylexTV/Schach/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=StylexTV/Schach&amp;utm_campaign=Badge_Grade">
-    <img alt="Codacy Badge" src="https://app.codacy.com/project/badge/Grade/87d05813cf254b988460cccc67134bec"/>
+  <a href="https://www.codacy.com/gh/StylexTV/Milotic/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=StylexTV/Milotic&amp;utm_campaign=Badge_Grade">
+    <img alt="Codacy Badge" src="https://app.codacy.com/project/badge/Grade/06bf8aba945f45c6b8b3e906fe8f49ba"/>
   </a>
   <a>
     <img alt="Code size" src="https://img.shields.io/github/languages/code-size/StylexTV/Milotic.svg"/>
