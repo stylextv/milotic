@@ -6,6 +6,8 @@ import de.chess.game.MoveList;
 
 public class MoveEvaluator {
 	
+	public static int SCORE_BEST_MOVE = 2000000;
+	
 	public static void eval(MoveList list, Board b) {
 		for(int i=0; i<list.getCount(); i++) {
 			Move m = list.getMove(i);

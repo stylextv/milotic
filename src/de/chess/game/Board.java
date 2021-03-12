@@ -6,7 +6,7 @@ import de.chess.ai.OpeningPosition;
 
 public class Board {
 	
-	private static final String STARTING_POSITION = "2q5/6bk/3p4/1P1Q4/1p2Pr2/1P4rP/2PR2PK/R7 w - - 2 50"; // "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
+	private static final String STARTING_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 	
 	private BitBoard[] bitBoards = new BitBoard[PieceCode.LAST + 1];
 	
@@ -47,7 +47,9 @@ public class Board {
 		
 //		LookupTable.initTables();
 //		
-//		Evaluator.eval(this);
+//		countPieces();
+//		
+//		System.out.println(Evaluator.evalEarlyQueenDevelopment(this, PieceCode.BLACK));
 	}
 	
 	public void parseFen(String fen) {

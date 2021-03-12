@@ -4,6 +4,16 @@ public class TranspositionTable {
 	
 	private static final TranspositionEntry[] MAP = new TranspositionEntry[100000000];
 	
+	public static void storeEntry(long key, int depth, Move m, int originalAlpha, int beta, int score, int age) {
+		int type;
+		
+		if(score <= originalAlpha) type = TranspositionEntry.TYPE_UPPER_BOUND;
+		else if(score >= beta) type = TranspositionEntry.TYPE_LOWER_BOUND;
+		else type = TranspositionEntry.TYPE_EXACT;
+		
+		putEntry(key, depth, m, type, score, age);
+	}
+	
 	public static void putEntry(long key, int depth, Move m, int type, int score, int age) {
 		int index = getMapIndex(key);
 		

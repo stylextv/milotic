@@ -200,6 +200,9 @@ public class Evaluator {
 		score += evalKingSafety(b, PieceCode.WHITE, normalWeight, occupiedSquares);
 		score -= evalKingSafety(b, PieceCode.BLACK, normalWeight, occupiedSquares);
 		
+		score += evalEarlyQueenDevelopment(b, PieceCode.WHITE, normalWeight);
+		score -= evalEarlyQueenDevelopment(b, PieceCode.BLACK, normalWeight);
+		
 		if(b.getSide() == PieceCode.WHITE) return score;
 		return -score;
 	}
@@ -385,6 +388,37 @@ public class Evaluator {
 		if(PieceCode.getTypeFromSpriteCode(code) != PieceCode.PAWN) return false;
 		
 		return PieceCode.getColorFromSpriteCode(code) == side;
+	}
+	
+	private static int evalEarlyQueenDevelopment(Board b, int side, int normalWeight) {
+		if(normalWeight == 0) return 0;
+		
+		int code = PieceCode.getSpriteCode(side, PieceCode.QUEEN);
+		
+		if(b.getPieceAmount(code) == 1) {
+			int y = b.getPieceIndex(code, 0) / 8;
+			
+			int firstY = 0;
+			
+			if(side == PieceCode.WHITE) firstY = 7;
+			
+			if(y == firstY) return 0;
+			else {
+				int count = 0;
+				
+				for(int x=0; x<8; x++) {
+					if(b.getPiece(firstY * 8 + x) != -1) count++;
+				}
+				
+				int dis = y - firstY;
+				if(dis < 0) dis = -dis;
+				
+				if(dis > 4) dis = 4;
+				
+				return -(count * 5 * dis / 4 * normalWeight) / 256;
+			}
+		}
+		return 0;
 	}
 	
 	public static int getPieceValue(int type) {

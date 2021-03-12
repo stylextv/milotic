@@ -52,7 +52,7 @@ public class BoardUI {
 		
 		boolean noWinner = winner == Winner.NONE;
 		
-		if(noWinner && board.getSide() != humanSide && System.currentTimeMillis() - lastHumanMove >= 1000 && PopupUI.getState() == 0) {
+		if(noWinner && board.getSide() != humanSide && System.currentTimeMillis() - lastHumanMove >= 700 && PopupUI.getState() == 0) {
 			int side = board.getSide();
 			
 			lastMove = board.makeAIMove();

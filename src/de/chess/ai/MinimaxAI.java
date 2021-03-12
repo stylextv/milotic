@@ -4,6 +4,8 @@ import de.chess.game.Board;
 import de.chess.game.Move;
 import de.chess.game.MoveGenerator;
 import de.chess.game.MoveList;
+import de.chess.game.TranspositionEntry;
+import de.chess.game.TranspositionTable;
 import de.chess.game.Winner;
 import de.chess.util.MathUtil;
 
@@ -49,6 +51,8 @@ public class MinimaxAI {
 	}
 	
 	private static int runNegamax(Board b, int alpha, int beta) {
+		int originalAlpha = alpha;
+		
 		visitedNormalNodes++;
 		
 		MoveList list = new MoveList();
@@ -56,6 +60,12 @@ public class MinimaxAI {
 		MoveGenerator.generateAllMoves(b, list);
 		
 		MoveEvaluator.eval(list, b);
+		
+		TranspositionEntry entry = TranspositionTable.getEntry(b.getPositionKey());
+		
+		if(entry != null && entry.getMove() != null) {
+			list.applyBestMove(entry.getMove());
+		}
 		
 		Move bestMove = null;
 		
@@ -78,20 +88,35 @@ public class MinimaxAI {
 		
 		responseMove = bestMove;
 		
+//		TranspositionTable.storeEntry(b.getPositionKey(), 0, bestMove, originalAlpha, beta, alpha, b.getHistoryPly());
+		
 		return alpha;
 	}
 	
 	private static int negamax(Board b, int alpha, int beta, int depth) {
-		visitedNormalNodes++;
 		if(depth > maxDepth) maxDepth = depth;
 		
 		if(depth == MAX_DEPTH) {
-			visitedNormalNodes--;
-			
 			return quiesce(b, alpha, beta, depth);
 		}
 		
+		visitedNormalNodes++;
+		
 		if(b.getFiftyMoveCounter() == 100 || b.hasThreefoldRepetition()) return 0;
+		
+		int originalAlpha = alpha;
+		
+		TranspositionEntry entry = TranspositionTable.getEntry(b.getPositionKey());
+		
+		if(entry != null && entry.getDepth() <= depth) {
+			transpositionUses++;
+			
+			if(entry.getType() == TranspositionEntry.TYPE_EXACT) return entry.getScore();
+			else if(entry.getType() == TranspositionEntry.TYPE_LOWER_BOUND) alpha = Math.max(alpha, entry.getScore());
+			else beta = Math.min(beta, entry.getScore());
+			
+			if(alpha >= beta) return entry.getScore();
+		}
 		
 		MoveList list = new MoveList();
 		
@@ -99,8 +124,15 @@ public class MinimaxAI {
 		
 		MoveEvaluator.eval(list, b);
 		
+		if(entry != null && entry.getMove() != null) {
+			list.applyBestMove(entry.getMove());
+		}
+		
 		boolean hasLegalMove = false;
-
+		
+		Move bestMove = null;
+		int bestScore = 0;
+		
 		while(list.hasMovesLeft()) {
 			Move m = list.next();
 			
@@ -113,12 +145,19 @@ public class MinimaxAI {
 				
 				if(score > alpha) {
 					alpha = score;
+					
+					if(bestMove == null || score > bestScore) {
+						bestMove = m;
+						bestScore = score;
+					}
 				}
 			}
 			
 			b.undoMove(m);
 			
 			if(alpha >= beta) {
+//				TranspositionTable.putEntry(b.getPositionKey(), 0, bestMove, TranspositionEntry.TYPE_LOWER_BOUND, alpha, b.getHistoryPly());
+				
 				return alpha;
 			}
 		}
@@ -126,12 +165,16 @@ public class MinimaxAI {
 		if(!hasLegalMove) {
 			int winner = b.findWinner(false);
 			
-			if(winner == Winner.DRAW) return 0;
-			
-			int score = INFINITY - depth;
-			
-			return b.getSide() == winner ? score : -score;
+			if(winner == Winner.DRAW) {
+				return 0;
+			} else {
+				int score = INFINITY - depth;
+				
+				return b.getSide() == winner ? score : -score;
+			}
 		}
+		
+//		TranspositionTable.storeEntry(b.getPositionKey(), depth, bestMove, originalAlpha, beta, alpha, b.getHistoryPly());
 		
 		return alpha;
 	}
@@ -141,6 +184,20 @@ public class MinimaxAI {
 		if(depth > maxDepth) maxDepth = depth;
 		
 		if(b.getFiftyMoveCounter() == 100 || b.hasThreefoldRepetition()) return 0;
+		
+		int originalAlpha = alpha;
+		
+		TranspositionEntry entry = TranspositionTable.getEntry(b.getPositionKey());
+		
+		if(entry != null && entry.getDepth() <= depth) {
+			transpositionUses++;
+			
+			if(entry.getType() == TranspositionEntry.TYPE_EXACT) return entry.getScore();
+			else if(entry.getType() == TranspositionEntry.TYPE_LOWER_BOUND) alpha = Math.max(alpha, entry.getScore());
+			else beta = Math.min(beta, entry.getScore());
+			
+			if(alpha >= beta) return entry.getScore();
+		}
 		
 		boolean inCheck = b.isSideInCheck();
 		
@@ -162,7 +219,14 @@ public class MinimaxAI {
 		
 		MoveEvaluator.eval(list, b);
 		
+		if(entry != null && entry.getMove() != null) {
+			list.applyBestMove(entry.getMove());
+		}
+		
 		boolean hasLegalMove = false;
+		
+		Move bestMove = null;
+		int bestScore = 0;
 		
 		while(list.hasMovesLeft()) {
 			Move m = list.next();
@@ -178,10 +242,15 @@ public class MinimaxAI {
 				if(inCheck || m.getCaptured() != 0) {
 					hasDoneMove = true;
 					
-					score = -quiesce(b, -beta, -alpha, depth+1);
+					score = -quiesce(b, -beta, -alpha, depth + 1);
 					
 					if(score > alpha) {
 						alpha = score;
+						
+						if(bestMove == null || score > bestScore) {
+							bestMove = m;
+							bestScore = score;
+						}
 					}
 				}
 			}
@@ -189,6 +258,8 @@ public class MinimaxAI {
 			b.undoMove(m);
 			
 			if(hasDoneMove && score >= beta) {
+//				TranspositionTable.putEntry(b.getPositionKey(), 0, bestMove, TranspositionEntry.TYPE_LOWER_BOUND, alpha, b.getHistoryPly());
+				
 				return beta;
 			}
 		}
@@ -196,12 +267,16 @@ public class MinimaxAI {
 		if(!hasLegalMove) {
 			int winner = b.findWinner(false);
 			
-			if(winner == Winner.DRAW) return 0;
-			
-			int score = INFINITY - depth;
-			
-			return b.getSide() == winner ? score : -score;
+			if(winner == Winner.DRAW) {
+				return 0;
+			} else {
+				int score = INFINITY - depth;
+				
+				return b.getSide() == winner ? score : -score;
+			}
 		}
+		
+//		TranspositionTable.storeEntry(b.getPositionKey(), depth, bestMove, originalAlpha, beta, alpha, b.getHistoryPly());
 		
 		return alpha;
 	}
