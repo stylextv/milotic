@@ -33,6 +33,7 @@ As I work on this project, I will make sure to record the progress I have made.
 
 Date | Version | Elo
 --- | --- | ---
+20.03.21 | alpha 1.1.4 (not released yet) | 2600
 20.03.21 | alpha 1.1.3 (not released yet) | 2500
 05.03.21 | alpha 1.1.2 (not released yet) | 2200
 03.03.21 | alpha 1.1.1 | 2050
